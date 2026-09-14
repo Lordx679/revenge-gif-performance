@@ -41,7 +41,26 @@
   function isImage(type, ReactNative) {
     if (!type) return false;
     if (ReactNative && (type === ReactNative.Image || type === ReactNative.ImageBackground)) return true;
-    return type.displayName === "Image" || type.name === "Image";
+    return /^(?:Image|FastImage|AnimatedImage|GifImage)$/i.test(String(type.displayName || type.name || ""));
+  }
+
+  function isFavoritePreview(props) {
+    if (!props) return false;
+    if (props.isFavorite === true || props.favorite === true || props.inFavorites === true) return true;
+    if (props.isGifPicker === true || props.gifPicker === true || props.isPicker === true) return true;
+    var label = String(props.accessibilityLabel || props.testID || props.dataTestId || "");
+    return /(?:favorite|favourite|gif.?picker)/i.test(label);
+  }
+
+  function pauseFavoritePreview(props) {
+    return Object.assign({}, props, {
+      animated: false,
+      isAnimated: false,
+      shouldAnimate: false,
+      autoPlay: false,
+      paused: true,
+      playbackRate: 0
+    });
   }
 
   var plugin = {
@@ -67,6 +86,10 @@
             progressiveRenderingEnabled: true,
             source: resizeDiscordGifSource(props.source, props)
           });
+
+          if (isFavoritePreview(props)) {
+            props = pauseFavoritePreview(props);
+          }
         }
 
         return orig.apply(React, [type, props].concat(children));
