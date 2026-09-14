@@ -91,7 +91,7 @@
             animated: true,
             autoPlay: true,
             paused: false,
-            playbackRate: 0.9,
+            playbackRate: 0.7,
             source: resizeDiscordGifSource(props.source, props)
           });
         }
