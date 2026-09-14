@@ -47,6 +47,22 @@
     return /^(?:Image|FastImage|AnimatedImage|GifImage)$/i.test(String(type.displayName || type.name || ""));
   }
 
+  function isGifPickerList(type, props) {
+    var name = String(type && (type.displayName || type.name || ""));
+    var label = String(props && (props.testID || props.dataTestId || props.accessibilityLabel || props.automationName || ""));
+    return /(?:flatlist|virtualizedlist|scrollview)/i.test(name) && /(?:gif|favorite|favourite|sticker)/i.test(label);
+  }
+
+  function optimizeGifPickerList(props) {
+    return Object.assign({}, props, {
+      removeClippedSubviews: true,
+      windowSize: 3,
+      initialNumToRender: Math.min(Number(props.initialNumToRender) || 8, 8),
+      maxToRenderPerBatch: Math.min(Number(props.maxToRenderPerBatch) || 8, 8),
+      updateCellsBatchingPeriod: Math.max(Number(props.updateCellsBatchingPeriod) || 50, 50)
+    });
+  }
+
   var plugin = {
     onLoad: function () {
       var common = (metro && metro.common) || {};
@@ -62,6 +78,10 @@
         var type = args[0];
         var props = args[1];
         var children = args.slice(2);
+
+        if (props && isGifPickerList(type, props)) {
+          props = optimizeGifPickerList(props);
+        }
 
         if (props && isGifSource(props.source, props) && isImage(type, ReactNative)) {
           props = Object.assign({}, props, {
