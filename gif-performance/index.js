@@ -59,7 +59,7 @@
       shouldAnimate: true,
       autoPlay: true,
       paused: false,
-      playbackRate: 0.5
+      playbackRate: 0.7
     });
   }
 
