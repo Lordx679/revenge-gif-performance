@@ -3,10 +3,13 @@
 
   var unpatch;
 
-  function isGifSource(source) {
+  function isGifSource(source, props) {
     var item = Array.isArray(source) ? source[0] : source;
-    var uri = typeof item === "string" ? item : item && item.uri;
-    return typeof uri === "string" && /\.gif(?:$|[?#&])/i.test(uri);
+    var uri = typeof item === "string" ? item : item && (item.uri || item.url);
+    if (typeof uri !== "string") return false;
+    if (/\.gif(?:$|[?#&])/i.test(uri)) return true;
+    if (props && (props.isAnimated === true || props.animated === true || props.format === "gif")) return true;
+    return /https?:\/\/(?:cdn\.)?discordapp\.com\/attachments\/[^/]+\/[^/]+\/image\d+\.(?:jpg|jpeg|png|webp)(?:[?#&]|$)/i.test(uri);
   }
 
   function displaySize(props) {
@@ -44,49 +47,6 @@
     return /^(?:Image|FastImage|AnimatedImage|GifImage)$/i.test(String(type.displayName || type.name || ""));
   }
 
-  function isFavoritePreview(props) {
-    if (!props) return false;
-    if (props.isFavorite === true || props.favorite === true || props.inFavorites === true) return true;
-    if (props.isGifPicker === true || props.gifPicker === true || props.isPicker === true) return true;
-    var label = String(props.accessibilityLabel || props.testID || props.dataTestId || "");
-    return /(?:favorite|favourite|gif.?picker)/i.test(label);
-  }
-
-  function sourceUrl(source) {
-    var item = Array.isArray(source) ? source[0] : source;
-    return typeof item === "string" ? item : item && (item.uri || item.url || item.src);
-  }
-
-  function addFavoriteLongPress(props, metro) {
-    var oldLongPress = props.onLongPress;
-    var remove = props.onRemoveFavorite || props.removeFavorite || props.onUnfavorite;
-    return Object.assign({}, props, {
-      onLongPress: function () {
-        var url = sourceUrl(props.source);
-        try {
-          if (typeof remove === "function") {
-            remove(url, props.gifId || props.id);
-            return;
-          }
-          var find = metro && metro.findByPropsLazy;
-          var modules = ["removeFavoriteGif", "removeFavoriteGIF", "removeFavorite"];
-          for (var i = 0; i < modules.length; i++) {
-            if (typeof find !== "function") break;
-            var module = find(modules[i]);
-            var method = module && module[modules[i]];
-            if (typeof method === "function") {
-              method.call(module, props.gifId || props.id || url);
-              return;
-            }
-          }
-        } catch (error) {
-          console.warn("[GIF Performance] could not remove favorite GIF", error);
-        }
-        if (typeof oldLongPress === "function") oldLongPress.apply(this, arguments);
-      }
-    });
-  }
-
   var plugin = {
     onLoad: function () {
       var common = (metro && metro.common) || {};
@@ -103,18 +63,17 @@
         var props = args[1];
         var children = args.slice(2);
 
-        if (props && isGifSource(props.source) && isImage(type, ReactNative)) {
+        if (props && isGifSource(props.source, props) && isImage(type, ReactNative)) {
           props = Object.assign({}, props, {
             fadeDuration: 0,
             resizeMethod: props.resizeMethod || "resize",
             progressiveRenderingEnabled: true,
+            animated: true,
+            autoPlay: true,
+            paused: false,
+            playbackRate: 0.7,
             source: resizeDiscordGifSource(props.source, props)
           });
-
-          if (isFavoritePreview(props)) {
-            props = addFavoriteLongPress(props, metro);
-          }
-
         }
 
         return orig.apply(React, [type, props].concat(children));
