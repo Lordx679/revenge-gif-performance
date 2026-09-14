@@ -56,10 +56,10 @@
   function optimizeGifPickerList(props) {
     return Object.assign({}, props, {
       removeClippedSubviews: true,
-      windowSize: 3,
-      initialNumToRender: Math.min(Number(props.initialNumToRender) || 8, 8),
-      maxToRenderPerBatch: Math.min(Number(props.maxToRenderPerBatch) || 8, 8),
-      updateCellsBatchingPeriod: Math.max(Number(props.updateCellsBatchingPeriod) || 50, 50)
+      windowSize: 1,
+      initialNumToRender: Math.min(Number(props.initialNumToRender) || 6, 6),
+      maxToRenderPerBatch: Math.min(Number(props.maxToRenderPerBatch) || 4, 4),
+      updateCellsBatchingPeriod: Math.max(Number(props.updateCellsBatchingPeriod) || 100, 100)
     });
   }
 
