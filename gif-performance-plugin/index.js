@@ -44,6 +44,25 @@
     return /^(?:Image|FastImage|AnimatedImage|GifImage)$/i.test(String(type.displayName || type.name || ""));
   }
 
+  function isFavoritePreview(props) {
+    if (!props) return false;
+    if (props.isFavorite === true || props.favorite === true || props.inFavorites === true) return true;
+    if (props.isGifPicker === true || props.gifPicker === true || props.isPicker === true) return true;
+    var label = String(props.accessibilityLabel || props.testID || props.dataTestId || "");
+    return /(?:favorite|favourite|gif.?picker)/i.test(label);
+  }
+
+  function limitFavoritePlayback(props) {
+    return Object.assign({}, props, {
+      animated: true,
+      isAnimated: true,
+      shouldAnimate: true,
+      autoPlay: true,
+      paused: false,
+      playbackRate: 0.5
+    });
+  }
+
   var plugin = {
     onLoad: function () {
       var common = (metro && metro.common) || {};
@@ -67,6 +86,10 @@
             progressiveRenderingEnabled: true,
             source: resizeDiscordGifSource(props.source, props)
           });
+
+          if (isFavoritePreview(props)) {
+            props = limitFavoritePlayback(props);
+          }
 
         }
 
