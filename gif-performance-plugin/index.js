@@ -9,6 +9,22 @@
     return typeof uri === "string" && /\.gif(?:$|[?#&])/i.test(uri);
   }
 
+  function isStickerSource(source) {
+    var item = Array.isArray(source) ? source[0] : source;
+    var uri = typeof item === "string" ? item : item && (item.uri || item.url);
+    return typeof uri === "string" && /(?:\/stickers\/|sticker[_-]?id=)/i.test(uri);
+  }
+
+  function makeStickerVisible(props) {
+    var next = Object.assign({}, props, { opacity: 1, collapsable: false });
+    if (props.style) {
+      next.style = Array.isArray(props.style)
+        ? props.style.concat([{ opacity: 1 }])
+        : [props.style, { opacity: 1 }];
+    }
+    return next;
+  }
+
   function isImage(type, ReactNative) {
     if (!type) return false;
     if (ReactNative && (type === ReactNative.Image || type === ReactNative.ImageBackground)) return true;
@@ -37,6 +53,10 @@
             resizeMethod: props.resizeMethod || "resize",
             progressiveRenderingEnabled: true
           });
+        }
+
+        if (props && isStickerSource(props.source) && isImage(type, ReactNative)) {
+          props = makeStickerVisible(props);
         }
 
         return orig.apply(React, [type, props].concat(children));
