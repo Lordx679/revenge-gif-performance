@@ -7,8 +7,9 @@
       "id": "Lordx679"
     }
   ],
-  "main": "./index.js",
+  "main": "index.js",
   "vendetta": {
     "icon": "ic_image"
-  }
+  },
+  "hash": "00aec87e1c8daf04a98c7a95c324e123af25d2bbd06bcac58f03cb9e34867270"
 }
