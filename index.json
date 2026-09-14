@@ -1,0 +1,30 @@
+{
+  "format": 1,
+  "name": "Lordx679 Revenge Plugins",
+  "description": "Plugins for Revenge Discord mobile.",
+  "plugins": {
+    "com.manus.gif-performance": {
+      "name": "GIF Performance",
+      "description": "Keep GIFs animated while reducing expensive React Native image rendering work.",
+      "author": "Manus",
+      "channels": {
+        "latest": "0.1.0"
+      },
+      "versions": {
+        "0.1.0": {
+          "url": "https://raw.githubusercontent.com/Lordx679/revenge-gif-performance/main/pool/com.manus.gif-performance@0.1.0.zip",
+          "sha256": "8c5e21a1ed2a7c459f516cad7f2b93310a56500356238123eb239662a99567f4",
+          "size": 1128,
+          "dependencies": {
+            "revenge.api": {
+              "version": ">=1 <2"
+            },
+            "discord": {
+              "version": "*"
+            }
+          }
+        }
+      }
+    }
+  }
+}
