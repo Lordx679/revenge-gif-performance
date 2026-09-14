@@ -4,16 +4,12 @@ A Revenge Discord Android plugin that keeps GIFs animated while reducing avoidab
 
 ## Add to Revenge
 
-Add this repository URL in Revenge's plugin repositories:
+Revenge appends `/index.json/` to repository URLs. Use this GitHub raw redirect endpoint, which accepts that trailing slash and redirects to the manifest:
 
 ```text
-https://raw.githubusercontent.com/Lordx679/revenge-gif-performance/main/index.json
+https://github.com/Lordx679/revenge-gif-performance/raw/refs/heads/main
 ```
 
-Then install **GIF Performance** from the repository. If Revenge expects a repository base URL rather than an index URL, use:
+Do not add `index.json` yourself. After adding the repository, install **GIF Performance** and restart Discord.
 
-```text
-https://raw.githubusercontent.com/Lordx679/revenge-gif-performance/main/
-```
-
-The plugin is JavaScript-only and cannot control Android's native GIF frame decoder. It removes image fades, requests resized decoding, and enables progressive rendering where supported.
+The plugin is JavaScript-only. It keeps GIF animation enabled, removes image fades, requests resized decoding, and enables progressive rendering where supported. It cannot directly throttle Android's native animated-GIF decoder.
