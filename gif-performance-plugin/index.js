@@ -52,14 +52,38 @@
     return /(?:favorite|favourite|gif.?picker)/i.test(label);
   }
 
-  function limitFavoritePlayback(props) {
+  function sourceUrl(source) {
+    var item = Array.isArray(source) ? source[0] : source;
+    return typeof item === "string" ? item : item && (item.uri || item.url || item.src);
+  }
+
+  function addFavoriteLongPress(props, metro) {
+    var oldLongPress = props.onLongPress;
+    var remove = props.onRemoveFavorite || props.removeFavorite || props.onUnfavorite;
     return Object.assign({}, props, {
-      animated: true,
-      isAnimated: true,
-      shouldAnimate: true,
-      autoPlay: true,
-      paused: false,
-      playbackRate: 0.7
+      onLongPress: function () {
+        var url = sourceUrl(props.source);
+        try {
+          if (typeof remove === "function") {
+            remove(url, props.gifId || props.id);
+            return;
+          }
+          var find = metro && metro.findByPropsLazy;
+          var modules = ["removeFavoriteGif", "removeFavoriteGIF", "removeFavorite"];
+          for (var i = 0; i < modules.length; i++) {
+            if (typeof find !== "function") break;
+            var module = find(modules[i]);
+            var method = module && module[modules[i]];
+            if (typeof method === "function") {
+              method.call(module, props.gifId || props.id || url);
+              return;
+            }
+          }
+        } catch (error) {
+          console.warn("[GIF Performance] could not remove favorite GIF", error);
+        }
+        if (typeof oldLongPress === "function") oldLongPress.apply(this, arguments);
+      }
     });
   }
 
@@ -88,7 +112,7 @@
           });
 
           if (isFavoritePreview(props)) {
-            props = limitFavoritePlayback(props);
+            props = addFavoriteLongPress(props, metro);
           }
 
         }
