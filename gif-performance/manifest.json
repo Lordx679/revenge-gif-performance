@@ -1,0 +1,14 @@
+{
+  "name": "GIF Performance",
+  "description": "Keeps GIFs animated while reducing avoidable React Native image rendering work.",
+  "authors": [
+    {
+      "name": "Lordx679",
+      "id": "Lordx679"
+    }
+  ],
+  "main": "./index.js",
+  "vendetta": {
+    "icon": "ic_image"
+  }
+}
